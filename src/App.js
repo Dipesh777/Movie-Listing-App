@@ -1,7 +1,12 @@
 import React from 'react'
+import '../node_modules/bootstrap/dist/css/bootstrap.css'
+import MovieContainer from './components/App Components/MovieContainer'
+
 function App() {
   return (
-    <div></div>
+    <div>
+      <MovieContainer />
+    </div>
   )
 }
 
