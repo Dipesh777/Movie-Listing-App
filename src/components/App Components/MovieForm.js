@@ -39,7 +39,7 @@ const MovieForm = (props) => {
             const movieDetail = {
                 id: uuidv4(),
                 name: movieName,
-                rank: movieRank
+                rank: Number(movieRank)
             }
             dispatch(addMovie(movieDetail))
             // reset

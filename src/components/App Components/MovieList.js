@@ -1,15 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import MovieCard from './MovieCard'
 
 const MovieList = (props) => {
     const [nameSearch, setNameSearch] = useState('')
-    const [searchMovie, setSearchMovie] = useState([])
+    const [orderBy, setOrderBy] = useState('')
+    const [movieList, setMovieList] = useState()
 
     // movie data from redux store
     const movies = useSelector((state) => {
         return state.movies
     })
+
+    useEffect(() => {
+        setMovieList([...movies])
+    }, [movies])
 
     // controling search bar
     const handleSearch = (event) => {
@@ -20,7 +25,58 @@ const MovieList = (props) => {
         const result = movies.filter((ele) => {
             return ele.name.toLowerCase().includes(input)
         })
-        setSearchMovie(result)
+        setMovieList(result)
+    }
+
+    // orderBy handler
+    const handleOrderBy = (event) => {
+        const inputOption = event.target.value
+        setOrderBy(inputOption)
+        if (inputOption === 'acendingA_Z') {
+            accendingAtoZ()
+        } else if (inputOption === 'acendingRank') {
+            accendingRank()
+        } else if (inputOption === 'decendingA_Z') {
+            decendingAtoZ()
+        } else if (inputOption === 'decendingRank') {
+            decendingRank()
+        }
+
+    }
+
+    // shorting functionality
+    const accendingAtoZ = () => {
+        const acending = movies.sort((a, b) => {
+            let front = a.name.toLowerCase()
+            let back = b.name.toLowerCase()
+            if (front < back) { return -1 }
+            if (front > back) { return 1 }
+            return 0
+
+        })
+        setMovieList(acending)
+    }
+
+    const decendingAtoZ = () => {
+        const decending = movies.sort((a, b) => {
+            let front = a.name.toLowerCase()
+            let back = b.name.toLowerCase()
+            if (front < back) { return 1 }
+            if (front > back) { return -1 }
+            return 0
+
+        })
+        setMovieList(decending)
+    }
+
+    const accendingRank = () => {
+        const acending = movies.sort((a, b) => a.rank - b.rank)
+        setMovieList(acending)
+    }
+
+    const decendingRank = () => {
+        const decending = movies.sort((a, b) => b.rank - a.rank)
+        setMovieList(decending)
     }
 
     return (
@@ -34,10 +90,12 @@ const MovieList = (props) => {
                     className='mx-2 form-control' />
 
                 {/* order by */}
-                <select className='form-control'>
-                    <option value="orderBy">Order By</option>
+                <select className='form-control' value={orderBy} onChange={handleOrderBy}>
+                    <option value="">Order By</option>
                     <option value="acendingA_Z">Acending A to Z</option>
+                    <option value="decendingA_Z">Decending A to Z</option>
                     <option value="acendingRank">Acending By Rank</option>
+                    <option value="decendingRank">Decending By Rank</option>
                 </select>
             </form>
 
@@ -52,23 +110,16 @@ const MovieList = (props) => {
 
                     ) : (
                         <>
-                            {searchMovie.length > 0 ? (
-                                searchMovie.map((ele) => {
+                            {
+                                movieList.map((ele) => {
                                     return (
                                         <div className='col-6 my-2' key={ele.id}>
                                             < MovieCard id={ele.id} movieName={ele.name} rank={ele.rank} />
                                         </div>
                                     )
                                 })
-                            ) : (
-                                movies.map((ele) => {
-                                    return (
-                                        <div className='col-6 my-2' key={ele.id}>
-                                            < MovieCard id={ele.id} movieName={ele.name} rank={ele.rank} />
-                                        </div>
-                                    )
-                                })
-                            )}
+                            }
+
                         </>
                     )
                 }
